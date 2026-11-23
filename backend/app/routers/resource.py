@@ -34,7 +34,7 @@ def list_entries(
     filters = {
         key: value.strip()
         for key, value in request.query_params.items()
-        if key in service.LIST_FIELDS and value.strip()
+        if key in service.filterable_fields() and value.strip()
     }
     items, total = service.list_entries(
         filters=filters, keyword=keyword, status=status, page=page, size=size)
@@ -52,7 +52,7 @@ def export_entries(
     filters = {
         key: value.strip()
         for key, value in request.query_params.items()
-        if key in service.LIST_FIELDS and value.strip()
+        if key in service.filterable_fields() and value.strip()
     }
     items, _ = service.list_entries(
         filters=filters, keyword=keyword, status=status, page=1, size=1_000_000)

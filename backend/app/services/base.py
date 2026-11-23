@@ -10,10 +10,15 @@ class BaseModuleService:
     MODULE = ""
     ENTITY = ""
     LIST_FIELDS: list[str] = []
+    # LIST_FIELDS 之外还允许作为查询条件、但不作为列表展示列的字段。
+    FILTER_FIELDS: list[str] = []
     REQUIRED_FIELDS: list[str] = []
     STATUS_ORDER: list[str] = []
     ACTION_RULES: dict[str, str] = {}
     NEGATIVE_ACTIONS: list[str] = []
+
+    def filterable_fields(self) -> list[str]:
+        return [*self.LIST_FIELDS, *self.FILTER_FIELDS]
 
     def list_entries(
         self,
@@ -26,7 +31,7 @@ class BaseModuleService:
     ) -> tuple[list[dict[str, Any]], int]:
         rows = list(store.rows(self.MODULE))
         for field, expected in (filters or {}).items():
-            if field in self.LIST_FIELDS:
+            if field in self.filterable_fields():
                 rows = [
                     row for row in rows
                     if expected.casefold() in str(row.get(field, "")).casefold()
